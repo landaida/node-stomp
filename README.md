@@ -1,5 +1,6 @@
 # node-stomp
-[STOMP](https://stomp.github.io/) Client for Node.js
+
+STOMP Client for Node.js
 
 [![Build status](https://travis-ci.org/mseld/node-stomp.svg?branch=master)](https://travis-ci.org/mseld/node-stomp)
 
@@ -11,6 +12,7 @@ const stomp = require('node-stomp');
 let stomp_args = {
     port: 61613,
     host: 'localhost',
+    'accept-version': stomp.VERSIONS.V1_1,
     debug: false,
     login: 'guest',
     passcode: 'guest',
@@ -70,8 +72,11 @@ client.on('error', function (error_frame) {
 ## TODO
 - [x] Support Multi-Destinations
 - [x] Support [Wildcards](http://activemq.apache.org/wildcards.html)
-- [ ] Support Re-Connecting
+- [x] Support version [1.1](https://stomp.github.io/stomp-specification-1.1.html)
+- [ ] Support version [1.2](https://stomp.github.io/stomp-specification-1.2.html)
+- [ ] Composite Destinations
+- [ ] Support Reconnecting
 - [ ] Support Fail-Over
 - [ ] Validate
-    - [ ] headers.ack ['auto','client','client-individual']
+    - [ ] headers.ack (auto, client, client-individual)
     - [ ] headers.destination
