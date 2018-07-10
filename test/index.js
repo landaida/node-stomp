@@ -90,19 +90,3 @@ process.on('SIGINT', function() {
 process.on('SIGTERM', function() {
     disconnect();
 });
-
-
-// setTimeout(() => {
-//     if (queue.length <= 50) {
-//         queue.push(frame.headers);
-//         console.log(queue.length + ' - ' + frame.headers.subscription + " : Received message : " + message.body[0]);
-//     }
-//     if (queue.length == 50) {
-//         client.ack(queue[queue.length - 1]);
-//         queue = [];
-//     }
-// }, Math.floor(Math.random() * 2000));
-
-// client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
-// client.heartbeat.incoming = 0;     // client does not want to receive heartbeats  from the server
-// client.send("/queue/test", {priority: 9}, "Hello, STOMP");
