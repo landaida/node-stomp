@@ -47,15 +47,19 @@ client.on('message', function(frame) {
     let messageId = frame.headers['message-id'];
     let subscription = frame.headers.subscription;
 
-    console.log(messages + " - Received message Id   : " + messageId);
-    console.log(messages + " - Received message sub  : " + subscription);
-    console.log(messages + " - Received message body : " + message);
+    for (const key in frame.headers) {
+        if (frame.headers.hasOwnProperty(key))
+            console.log(`${messages} - ${key} : ${frame.headers[key]}`);
+    }
+
+    console.log(`${messages} - body : ${message}`);
 
     client.send({
-        destination: '/queue/received,/queue/received_1',
+        destination: '/queue/received',
         expires: 0,
         priority: 9,
-        persistent: 'true',
+        persistent: true,
+        'content-type': "text/plain",
         body: message,
     }, false);
 
