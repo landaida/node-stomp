@@ -6,18 +6,17 @@ const stomp = require('../lib/stomp');
 let stomp_args = {
     port: 61613,
     host: 'localhost',
+    /* additional header */
+    debug: false,
+    'client-id': 'my-client-id',
     'accept-version': stomp.VERSIONS.V1_0,
     // 'heart-beat': '5000,5000',
-    debug: false
 };
 
 // 'activemq.prefetchSize' is optional.
-// Specified number will 'fetch' that many messages
-// and dump it to the client.
-// case mu
+// case multi-dest/Wildcards recommended to set ack to : client-individual
 let headers = {
-    // destination: ['/queue/outbound.STC.*', '/queue/test_q2'],
-    destination: '/queue/outbound.STC.*',
+    destination: '/queue/test',
     // ack: 'client',
     ack: 'client-individual',
     'activemq.prefetchSize': '50'
@@ -43,18 +42,23 @@ let queue = [];
 
 client.on('message', function(frame) {
     messages++;
-    // setTimeout(() => {
-    //     if (queue.length <= 50) {
-    //         queue.push(frame.headers);
-    //         console.log(queue.length + ' - ' + frame.headers.subscription + " : Received message : " + message.body[0]);
-    //     }
-    //     if (queue.length == 50) {
-    //         client.ack(queue[queue.length - 1]);
-    //         queue = [];
-    //     }
-    // }, Math.floor(Math.random() * 2000));
 
-    console.log(frame.headers.subscription + " : Received message : " + frame.body[0]);
+    let message = frame.body[0];
+    let messageId = frame.headers['message-id'];
+    let subscription = frame.headers.subscription;
+
+    console.log(messages + " - Received message Id   : " + messageId);
+    console.log(messages + " - Received message sub  : " + subscription);
+    console.log(messages + " - Received message body : " + message);
+
+    client.send({
+        destination: '/queue/received,/queue/received_1',
+        expires: 0,
+        priority: 9,
+        persistent: 'true',
+        body: message,
+    }, false);
+
     client.ack(frame.headers);
 });
 
@@ -86,3 +90,19 @@ process.on('SIGINT', function() {
 process.on('SIGTERM', function() {
     disconnect();
 });
+
+
+// setTimeout(() => {
+//     if (queue.length <= 50) {
+//         queue.push(frame.headers);
+//         console.log(queue.length + ' - ' + frame.headers.subscription + " : Received message : " + message.body[0]);
+//     }
+//     if (queue.length == 50) {
+//         client.ack(queue[queue.length - 1]);
+//         queue = [];
+//     }
+// }, Math.floor(Math.random() * 2000));
+
+// client.heartbeat.outgoing = 20000; // client will send heartbeats every 20000ms
+// client.heartbeat.incoming = 0;     // client does not want to receive heartbeats  from the server
+// client.send("/queue/test", {priority: 9}, "Hello, STOMP");
